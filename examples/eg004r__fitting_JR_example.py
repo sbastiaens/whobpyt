@@ -79,7 +79,7 @@ node_size = sc.shape[0]
 output_size = eeg_data.shape[0]
 TPperWindow = 20
 step_size = 0.0001
-num_epochs = 20
+num_epochs = 2 #20
 tr = 0.001
 state_size = 6
 base_batch_num = 200
@@ -177,17 +177,16 @@ plt.show()
 # The modified JR model
 
 val_sim_len = 20*1000 # Simulation length in msecs
-model_validate = JansenRit_np(model.node_size, model.step_size, model.output_size, model.sc, model.lm, model.dist, model.params)
+model_validate = JansenRit_np(model.node_size, model.step_size, model.output_size, model.tr, model.sc, model.lm.detach().numpy(), model.dist.detach().numpy(), model.params)
 
-state_hist, hE = model_validate.forward(external = 0, hx = model_validate.createIC(ver = 0), hE = 0)
-
+state_hist, hE = model_validate.forward(external = u, hx = model_validate.createIC(ver = 0), hE = np.zeros((model.node_size,500)), sim_len=val_sim_len)
 # %%
 # Plot the EEG
 plt.figure(figsize = (16, 8))
 plt.title("E-I and M")
-for n in range(model.num_regions):
-    plt.plot(state_hist['eeg'], label = "E-I Node = " + str(n)) # Plotting EEG window
-    plt.plot(state_hist['E'] - state_hist['I'], label = "EEG Node = " + str(n)) # plotting E-I
+for n in range(model.node_size):
+    #plt.plot(state_hist[0:2000, n, 0:1], label = "E-I Node = " + str(n)) # Plotting EEG window
+    plt.plot(state_hist[0:200, n, 1:2] - state_hist[0:200, n, 2:3], label = "EEG Node = " + str(n)) # plotting E-I
 
 plt.xlabel('Time Steps (multiply by step_size to get msec), step_size = ' + str(step_size))
-plt.legend()
+#plt.legend()
