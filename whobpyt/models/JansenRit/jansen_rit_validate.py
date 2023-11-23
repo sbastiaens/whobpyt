@@ -4,7 +4,7 @@ import numpy as np
 
 class JansenRit_np():
 
-    def __init__(self, node_size, step_size, output_size, tr, sc, lm, dist, params):      
+    def __init__(self, node_size, step_size, output_size, sc, lm, dist, params):      
 
         
         # Initialize the JR Model 
@@ -13,9 +13,8 @@ class JansenRit_np():
         #  num_regions: Int - Number of nodes in network to model
         #  params: Params_JR - The parameters that all nodes in the network will share
         #  Con_Mtx: Tensor [num_regions, num_regions] - With connectivity (eg. structural connectivity)
-        step_size=0.1
+        #step_size=0.1
         self.step_size = step_size
-        self.tr = tr  # tr ms (integration step 0.1 ms)
         self.sc = sc  # structural connectivity factor
         self.node_size = node_size  # num of ROI
         self.output_size = output_size  # num of EEG channels
@@ -50,7 +49,8 @@ class JansenRit_np():
         g_f = self.params.g_f.npValue()
         g_b = self.params.g_b.npValue()
 
-
+        next_state = {}
+        
         # Sigmoid function
         def sigmoid(x, vmax, v0, r):
             return vmax / (1 + np.exp(r * (v0 - x)))
@@ -146,7 +146,14 @@ class JansenRit_np():
             temp = cy0 * np.matmul(self.lm_t, M[:200, :]) - 1 * y0
             state_hist[i, :, 6:7] = temp # eeg_window
 
+        next_state['M'] = state_hist[:,:,0]
+        next_state['E'] = state_hist[:,:,1]
+        next_state['I'] = state_hist[:,:,2]
+        next_state['Mv'] = state_hist[:,:,3]
+        next_state['Ev'] = state_hist[:,:,4]
+        next_state['Iv'] = state_hist[:,:,5]
+        next_state['eeg'] = state_hist[:,:,6]
             # Should then downsample the state_hist to the sampling rate of the EEG
-        return state_hist, hE
+        return next_state, hE
 
     
