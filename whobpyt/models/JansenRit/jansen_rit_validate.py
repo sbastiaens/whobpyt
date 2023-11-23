@@ -13,7 +13,7 @@ class JansenRit_np():
         #  num_regions: Int - Number of nodes in network to model
         #  params: Params_JR - The parameters that all nodes in the network will share
         #  Con_Mtx: Tensor [num_regions, num_regions] - With connectivity (eg. structural connectivity)
-        step_size=0.1
+        # step_size=0.1
         self.step_size = step_size
         self.tr = tr  # tr ms (integration step 0.1 ms)
         self.sc = sc  # structural connectivity factor
