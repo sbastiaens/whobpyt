@@ -100,7 +100,8 @@ sc = np.log1p(sc) / np.linalg.norm(np.log1p(sc))
 
 # %%
 # Load the leadfield matrix
-lm = os.path.join(data_dir, 'Subject_1_low_voltage_lf.npy')
+lm = np.load(os.path.join(data_dir, 'Subject_1_low_voltage_lf.npy')) # Leadfield Matrix. Option 1 is load file and Option 2 is lm = np.zeros((output_size,200))
+lm_v = 1 * np.ones((output_size, node_size)) # Variance of leadfield matrix
 ki0 =stim_weights_thr[:,np.newaxis]
 delays = dist/conduction_velocity
 
@@ -130,8 +131,6 @@ data_mean = Timeseries(eeg_data, num_epochs, batch_size)
 
 # %%
 # get model parameters structure and define the fitted parameters by setting non-zero variance for the model
-lm = np.zeros((output_size,200))
-lm_v = np.zeros((output_size,200))
 params = JansenRitParams(A = par(3.25), 
                          a= par(100,100, 2, True), 
                          B = par(22), 
@@ -154,7 +153,7 @@ params = JansenRitParams(A = par(3.25),
                          k0=par(0),
                          cy0 = par(50, 50, 1, True), 
                          ki=par(ki0), 
-                         lm=par(lm, lm, 1 * np.ones((output_size, node_size))+lm_v, True)
+                         lm=par(lm, lm, lm_v, True)
                          )
 
 
